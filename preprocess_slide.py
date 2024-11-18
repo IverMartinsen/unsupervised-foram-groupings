@@ -1,11 +1,15 @@
+import os
 import yolov5
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 from utils import get_boxes_yolo, compute_iou
 
+path_to_slide="./Data/Gol-F-30-3_19-20/Gol-F-30-3, 19-20_zoom 16 (1).JPG"
+zoom_level = 16
 
-path_to_slide = "Data/Gol-F-30-3_19-20/Gol-F-30-3, 19-20_ zoom 6.25.JPG"
+fname = os.path.basename(path_to_slide.strip(".JPG"))
+
 slide = np.array(Image.open(path_to_slide)).astype(np.uint8)
 
 model = yolov5.load("keremberke/yolov5m-aerial-sheep")  # pretrained model for sheep detection
@@ -14,7 +18,10 @@ model = yolov5.load("keremberke/yolov5m-aerial-sheep")  # pretrained model for s
 boxes = []
 num_boxes = []
 
-for size in [1024, 2048, 4096]:
+scales = {6.25: [1024, 2048, 4096], 16: [1024, 2048]}  # scales for different zoom levels 
+
+# Large objects use 1024, 2048 for medium and 4096 for small objects
+for size in scales[zoom_level]:
     boxes_ = get_boxes_yolo(slide, size=size)  # get bounding boxes using the sheep detector
     num_boxes.append(len(boxes_))
     boxes += boxes_
@@ -35,11 +42,17 @@ for box in boxes:
     rect = plt.Rectangle((box[1], box[0]), box[3] - box[1], box[2] - box[0], edgecolor="r", facecolor="none")
     ax.add_patch(rect)
 plt.axis("off")
-plt.savefig(f"thumbnail.png", dpi=300)
+plt.savefig(f"Data/{fname}_thumbnail.png", dpi=300)
 # ============ display the bounding boxes (end) ============
 
 # ============ save the cropped images ============
 thickness = 10
+
+BOXES = "Data/BOXES_" + fname + "/images"
+CROPS = "Data/CROPS_" + fname + "/images"
+os.makedirs(BOXES, exist_ok=True)
+os.makedirs(CROPS, exist_ok=True)
+
 for box in boxes:
     box = [int(x) for x in box]
     
@@ -53,11 +66,11 @@ for box in boxes:
     # resize the image
     slide_with_box = Image.fromarray(slide_with_box).resize((640, 480))
     slide_with_box = np.array(slide_with_box)    
-    plt.imsave(f"Data/BOXES/box_{box_id}.png", slide_with_box, dpi=50)
+    plt.imsave(f"{BOXES}/box_{box_id}.png", slide_with_box, dpi=50)
     
     # save the fossil
     fossil = slide[box[0]:box[2], box[1]:box[3]]
-    plt.imsave(f"Data/CROPS/fossil_{box_id}.png", fossil)
+    plt.imsave(f"{CROPS}/fossil_{box_id}.png", fossil)
 # ============ save the cropped images (end) ============
 
 
