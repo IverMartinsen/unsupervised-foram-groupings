@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from sklearn.cluster import KMeans
 
-df = pd.read_csv("Data/FEATURES_Gol-F-30-3, 19-20_zoom 16.csv")
-path_to_crops = "Data/CROPS_Gol-F-30-3, 19-20_zoom 16/images"
-destination = "Data/GROUPS_Gol-F-30-3, 19-20_zoom 16"
+df = pd.read_csv("Data/FEATURES_Gol-F-30-3, 19-20_zoom 35.csv")
+path_to_crops = "Data/CROPS_Gol-F-30-3, 19-20_zoom 35/images"
+destination = "Data/GROUPS_Gol-F-30-3, 19-20_zoom 35"
 
 os.makedirs(destination, exist_ok=True)
 
