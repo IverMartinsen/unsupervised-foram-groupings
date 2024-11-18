@@ -1,15 +1,22 @@
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 from sklearn.cluster import KMeans
 
-df = pd.read_csv("/Users/ima029/Desktop/Unsupervised foraminifera groupings/features.csv")
-path_to_crops = "/Users/ima029/Desktop/Unsupervised foraminifera groupings/imagefolder/images"
+df = pd.read_csv("Data/FEATURES_Gol-F-30-3, 19-20_zoom 16.csv")
+path_to_crops = "Data/CROPS_Gol-F-30-3, 19-20_zoom 16/images"
+destination = "Data/GROUPS_Gol-F-30-3, 19-20_zoom 16"
+
+os.makedirs(destination, exist_ok=True)
 
 kmeans = KMeans(n_clusters=10, random_state=0)
 
-group_labels = kmeans.fit_predict(df.drop(columns=["label", "filename"]))
+try:
+    group_labels = kmeans.fit_predict(df.drop(columns=["label", "filename"]))
+except KeyError:
+    group_labels = kmeans.fit_predict(df.drop(columns=["filename"]))
 
 for i in range(10):
     group = df[group_labels == i]
@@ -22,4 +29,4 @@ for i in range(10):
         ax.flatten()[j].imshow(img)
     for ax in ax.flatten():
         ax.axis("off")
-    plt.savefig(f"Group_{i}.png")
+    plt.savefig(f"{destination}/Group_{i}.png")
