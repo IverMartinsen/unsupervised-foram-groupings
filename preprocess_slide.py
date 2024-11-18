@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from utils import get_boxes_yolo, compute_iou
 
-path_to_slide="./Data/Gol-F-30-3_19-20/Gol-F-30-3, 19-20_zoom 16 (1).JPG"
+path_to_slide="./Data/Gol-F-30-3_19-20/Gol-F-30-3, 19-20_zoom 16 (4).JPG"
 zoom_level = 16
 
 fname = os.path.basename(path_to_slide.strip(".JPG"))
