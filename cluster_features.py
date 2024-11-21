@@ -14,13 +14,19 @@ os.makedirs(destination, exist_ok=True)
 kmeans = KMeans(n_clusters=10, random_state=0)
 
 try:
-    group_labels = kmeans.fit_predict(df.drop(columns=["label", "filename"]))
+    X = df.drop(columns=["label", "filename"])
 except KeyError:
-    group_labels = kmeans.fit_predict(df.drop(columns=["filename"]))
+    X = df.drop(columns=["filename"])
+
+F = df["filename"]
+
+group_labels = kmeans.fit_predict(X)
 
 for i in range(10):
-    group = df[group_labels == i]
-    filenames = group["filename"]
+    filenames = F[group_labels == i]
+    features = X[group_labels == i]
+    centroid = kmeans.cluster_centers_[i]
+    mean_distance = np.mean(np.linalg.norm(features - centroid, axis=1))
     n = np.sqrt(len(filenames))
     n = int(n) + 1 if n % 1 != 0 else int(n)
     fig, ax = plt.subplots(n, n, figsize=(20, 20))
@@ -29,4 +35,6 @@ for i in range(10):
         ax.flatten()[j].imshow(img)
     for ax in ax.flatten():
         ax.axis("off")
+    fig.suptitle(f"Group {i} - Mean Distance: {mean_distance:.2f}", fontsize=20)
     plt.savefig(f"{destination}/Group_{i}.png")
+    plt.show()
