@@ -1,9 +1,10 @@
-import numpy as np
-import cv2 as cv
-from PIL import Image
-from skimage.exposure import histogram
-from skimage.measure import regionprops, label
 import yolov5
+import cv2 as cv
+import numpy as np
+from PIL import Image
+from sklearn.metrics import pairwise_distances
+from skimage.measure import regionprops, label
+from skimage.exposure import histogram
 
 
 model = yolov5.load("keremberke/yolov5m-aerial-sheep")  # pretrained model for sheep detection
@@ -221,4 +222,13 @@ def get_crop(regionprop, img, size=(512, 512), pad_image=True):
         print(f"ValueError with input shape {np.array(img).shape} and processed shape {image_out.shape} and size {size}")
         print(f"regionprop_slice: {regionprop_slice}")
         raise
-    
+
+def kmeans_from_given_centroids(X, centroids, num_iter=100):
+    for i in range(num_iter):
+        
+        d = pairwise_distances(X, centroids)
+        labels = np.argmin(d, axis=1)
+        centroids = np.zeros_like(centroids)
+        for j in range(len(centroids)):
+            centroids[j] = X[labels == j].mean()
+    return labels, centroids
