@@ -232,3 +232,29 @@ def kmeans_from_given_centroids(X, centroids, num_iter=100):
         for j in range(len(centroids)):
             centroids[j] = X[labels == j].mean()
     return labels, centroids
+
+def init_centroids_semi_supervised(x_lab, y_lab, x_un, k):
+    """Init centroids semi supervised using kmeans++
+
+    Args:
+        x_lab (_type_): features of labeled data
+        y_lab (_type_): labels of labeled data
+        x_un (_type_): features of unlabeled data
+        k (_type_): number of clusters
+    """
+    k_lab = np.unique(y_lab).shape[0]
+    k_un = k - k_lab
+
+    cluster_labs = np.zeros_like(y_lab)
+
+    centroids = np.zeros((k, x_lab.shape[1]))
+    for i, lab in enumerate(np.unique(y_lab)):
+        centroids[i] = np.mean(x_lab[y_lab == lab], axis=0)
+        cluster_labs[y_lab == lab] = i
+
+    for i in range(k_un):
+        d = euclidean_distances(x_un, centroids).min(axis=1)
+        p = d / d.sum()
+        centroids[k_lab + i] = x_un[np.random.choice(range(x_un.shape[0]), p=p)]
+    
+    return centroids, cluster_labs
