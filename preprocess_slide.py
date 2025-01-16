@@ -92,8 +92,10 @@ for path_to_slide in path_to_slides:
         plt.imsave(f"{BOXES}/box_{box_id}.png", slide_with_box, dpi=50)
         
         # save the fossil
-        fossil = slide[box[0]:box[2], box[1]:box[3]]
-        plt.imsave(f"{CROPS}/fossil_{box_id}.png", fossil)
+        #fossil = slide[box[0]:box[2], box[1]:box[3]]
+        #plt.imsave(f"{CROPS}/fossil_{box_id}.png", fossil)
+        fossil = Image.fromarray(slide).crop((box[1], box[0], box[3], box[2]))
+        fossil.save(f"{CROPS}/fossil_{box_id}.jpg")
     # ============ save the cropped images (end) ============
 
 
